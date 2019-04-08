@@ -13,6 +13,9 @@ Also you will need to
 
 **pip install apiclient**
 
+**pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib**
+
+
 This will anable the user to establish and auth flow and allow the cloud storage app permissions for their google drive account. This auth flow saves in a file called token.pickle to keep user signed in upon returning sessions. 
 
 The user will be prompted by the program first time around saying no key. The user can then type gen to create the AES key. The system will quit and ask the user to restart so it can load the key. Now you have a key to encrypt your files with. 
