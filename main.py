@@ -1,12 +1,13 @@
 from __future__ import print_function
-import pickle
-import os
+from apiclient.http import MediaFileUpload, MediaIoBaseDownload
+from cryptography.fernet import Fernet
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+import pickle
+import os
 import io
-from apiclient.http import MediaFileUpload, MediaIoBaseDownload
-from cryptography.fernet import Fernet
+
 
 #https://developers.google.com/drive/api/v3/about-sdk - GoogleDriveAPI
 
@@ -63,8 +64,8 @@ def main():
     print("------------------------")
     print("!List of actions!")
     print("Search Files: search")
-    print("Upload a file: up")
-    print("Download a file: down")
+    print("Upload a file: upload")
+    print("Download a file: download")
     print("Encrypt a file: enc")
     print("Decrypt a file: dec")
     print("Share with user: share")
@@ -81,12 +82,12 @@ def main():
         if(nextAction == 'search'):
             fileName = (str(raw_input("Enter a file name to search for: ")))
             search(fileName)
-        elif(nextAction == 'up'):
+        elif(nextAction == 'upload'):
             fileName = (str(raw_input("Enter full file name for upload: ")))
             fileType = (str(raw_input("Enter the file exstension without a dot: ")))
             fileType = mimeTypes[fileType]
             upload(fileName, fileType)
-        elif(nextAction == 'down'):
+        elif(nextAction == 'download'):
             fileName = (str(raw_input("Enter a file name for download: ")))
             download(getID(fileName), fileName)
         elif(nextAction =='enc'):
@@ -127,8 +128,8 @@ def main():
 def keyGen():
     try:
         key = Fernet.generate_key()
-        with io.open('key.key', 'w+') as file:
-            file.write(key.decode()) #Had to decode the key as it kept complaining it wasnt in unicode
+        file = open('key.key', 'w+')
+        file.write(key.decode()) #Had to decode the key as it kept complaining it wasnt in unicode
         return key
     except:
         print('No idea what to tell you, should have worked')
@@ -147,12 +148,12 @@ def importKey():
 #Using fernet encryption and then writes the contents back to the file passed in
 def encryptFile(fileName, Key):
     try:
-        with open(fileName, "r") as file:
-            data = file.read()
-            fernet = Fernet(Key)
-            encrypted = fernet.encrypt(data)
-        with open(fileName, "w") as file:
-            file.write(encrypted)
+        data = open(fileName, "r")
+        data = data.read()
+        fernet = Fernet(Key)
+        encrypted = fernet.encrypt(data)
+        file = open(fileName, "w")
+        file.write(encrypted)
         print("File Encrypted")
     except:
         print("encryption failed")
@@ -162,12 +163,12 @@ def encryptFile(fileName, Key):
 #Using fernet decryption and then writes the contents back to the file passed in
 def decryptFile(fileName, Key):
     try:
-        with open(fileName, "r") as file:
-            data = file.read()
-            fernet = Fernet(Key)
-            decrypted = fernet.decrypt(data)
-        with open(fileName, "w") as file:
-            file.write(decrypted)
+        data = open(fileName, "r")
+        data = data.read()
+        fernet = Fernet(Key)
+        decrypted = fernet.decrypt(data)
+        file = open(fileName, "w")
+        file.write(decrypted)
         print("File Decrypted")
     except:
         print("Decryption failes, might not actually be encrypted in the first place")
@@ -261,7 +262,7 @@ def download(file_id, fileName): #Take a file name and id
         while done is False:
             status, done = downloader.next_chunk() #downlaod file chunks
             print( "Download %d%%." % int(status.progress() * 100))
-        with io.open(fileName, 'w+') as file:
+        with io.open(fileName, 'w+') as file: #use an io buffer to download file
             fileRequest.seek(0)
             file.write(fileRequest.read().decode()) #Write file data for a file
     except:
