@@ -1,4 +1,4 @@
-# Python-GoogledDriveAPI
+# Python-GoogleDriveAPI
 Command line Google Drive tool to manage your drive and encrypt files to share with peoplem for CS3031
 
 To use, open keygen.py and follow instructions in comments at top
