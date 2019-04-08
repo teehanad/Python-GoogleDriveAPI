@@ -5,9 +5,9 @@ Firstly there should be no files in your directory apart from main.py and keygen
 https://developers.google.com/drive/api/v3/quickstart/python
 Also you will need to
 
-pip install fernet
+**pip install fernet**
 
-pip install cryptography
+**pip install cryptography**
 
 This will anable the user to establish and auth flow and allow the cloud storage app permissions for their google drive account. This auth flow saves in a file called token.pickle to keep user signed in upon returning sessions. 
 
