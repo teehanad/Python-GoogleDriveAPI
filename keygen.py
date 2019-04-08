@@ -53,7 +53,7 @@ def main():
 
 
 
-#Method to generate new key pair using the RSA (Rivest–Shamir–Adleman) cryptosystem
+#Method to generate new key pair using the RSA (Rivest-Shamir-Adleman) cryptosystem
 def keyGen():
     key = RSA.generate(1024)
 
