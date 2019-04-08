@@ -4,6 +4,7 @@ Command line Google Drive tool to manage your drive and encrypt files to share w
 Firstly there should be no files in your directory apart from main.py and keygen.py. The user will first have to go to here and generate a credentials.json file 
 https://developers.google.com/drive/api/v3/quickstart/python
 Also you will need to
+
 pip install fernet
 pip install cryptography
 
