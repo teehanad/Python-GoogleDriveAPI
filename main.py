@@ -12,7 +12,7 @@ import io
 #https://developers.google.com/drive/api/v3/about-sdk - GoogleDriveAPI
 
 
-#A dictionary of someGoogleDriveAPI supposrted mime types for setting file type on upload bassed on file exstension
+#A dictionary of someGoogleDriveAPI supported MIME types for setting file type on upload bassed on file exstension
 #Can add more if needs be
 mimeTypes={
     "xls":'application/vnd.ms-excel',
@@ -77,7 +77,7 @@ def main():
     print("------------------------")
     print('\n')
     while userExit == False:
-        #biiiiiiiggggggg loooooonnnnggggg if elif else statment to cover calling every function possoble for user
+        #biiiiiiiggggggg loooooonnnnggggg if elif else statment to cover calling every function possible for user
         nextAction = (str(raw_input("What would you like to do next? ")))
         if(nextAction == 'search'):
             fileName = (str(raw_input("Enter a file name to search for: ")))
@@ -124,12 +124,12 @@ def main():
 
     
 #This is the key that we will encrypt the files going into the google drive with
-#Generate a new ket using fernet and save it to a .key file
+#Generate a new key using fernet and save it to a .key file
 def keyGen():
     try:
         key = Fernet.generate_key()
         file = open('key.key', 'w+')
-        file.write(key.decode()) #Had to decode the key as it kept complaining it wasnt in unicode
+        file.write(key.decode()) 
         return key
     except:
         print('No idea what to tell you, should have worked')
@@ -144,7 +144,7 @@ def importKey():
     except:
         print("No key file")
 
-#method that is passed in a file name and our key and created an encrypted strimg of our data
+#function that is passed in a file name and our key and creates an encrypted string of our data
 #Using fernet encryption and then writes the contents back to the file passed in
 def encryptFile(fileName, Key):
     try:
@@ -159,7 +159,7 @@ def encryptFile(fileName, Key):
         print("encryption failed")
 
 
-#method that is passed in a file name and our key and created an decrypted strimg of our data
+#Function that is passed in a file name and our key and creates an decrypted strimg of our data
 #Using fernet decryption and then writes the contents back to the file passed in
 def decryptFile(fileName, Key):
     try:
@@ -183,7 +183,7 @@ def establishAuthFlow():
         # time.
         if os.path.exists('token.pickle'):
             with open('token.pickle', 'rb') as token:
-                creds = pickle.load(token) #imports current toekn file creds
+                creds = pickle.load(token) #imports current token file creds
         # If there are no (valid) credentials available procced to log in
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
@@ -220,7 +220,7 @@ def search(fileName):
 
 
 #Function to search for a file in your google drive by exact name
-#Same as the function above just onlt returns the item id instead of the name and id formated
+#Same as the function above just only returns the item id instead of the name and id formated
 def getID(fileName):
     try:
         global service
@@ -245,7 +245,7 @@ def upload(fileName, fileType): #Take in a file name and type
                                 mimetype=fileType) #Set file type for upload using the mime type dict from above
         file = service.files().create(body=file_metadata,
                                             media_body=media,
-                                            fields='id').execute() #create a file with metadata, filetype and id and ececute upload
+                                            fields='id').execute() 
         print ("Upload of "+fileName+" completed")
     except:
         print("Upload Failed")
@@ -255,16 +255,16 @@ def upload(fileName, fileType): #Take in a file name and type
 def download(file_id, fileName): #Take a file name and id
     try:
         global service
-        request = service.files().get_media(fileId=file_id) #request a file by its unique file id
-        fileRequest = io.BytesIO() #set request buffer
-        downloader = MediaIoBaseDownload(fileRequest, request) #create an object to download file
+        request = service.files().get_media(fileId=file_id) 
+        fileRequest = io.BytesIO() 
+        downloader = MediaIoBaseDownload(fileRequest, request)
         done = False
         while done is False:
-            status, done = downloader.next_chunk() #downlaod file chunks
+            status, done = downloader.next_chunk() 
             print( "Download %d%%." % int(status.progress() * 100))
-        with io.open(fileName, 'w+') as file: #use an io buffer to download file
+        with io.open(fileName, 'w+') as file: 
             fileRequest.seek(0)
-            file.write(fileRequest.read().decode()) #Write file data for a file
+            file.write(fileRequest.read().decode())
     except:
         print("Downlaod Failed")
 
@@ -274,18 +274,18 @@ def download(file_id, fileName): #Take a file name and id
 def shareFile(fileID, userEmail):
     try:
         global service
-        batch = service.new_batch_http_request(callback=callback) #create a batch (new http request instance of the GoogleDriveAPI)
+        batch = service.new_batch_http_request(callback=callback) 
         user_permission = { #create a user permissions list to assign to a file using users type, role, and emailAddress for identification
             'type': 'user',
             'role': 'writer',
             'emailAddress': userEmail,
         }
-        batch.add(service.permissions().create( #add a request to add these permissions to a file to the batch
-                fileId=fileID,  #use file id to id file
+        batch.add(service.permissions().create( 
+                fileId=fileID,  
                 body=user_permission,   #set permission body to the permission list we crated
-                fields='id',    #tell the requets to retunr the permission id fiels
+                fields='id',   
         ))
-        batch.execute() #ecexute batch of permissions requests
+        batch.execute() 
         print("File ws shared with "+userEmail)
     except:
         print("Share file failed")
@@ -316,7 +316,6 @@ def removeUser(fileID, permissionID):
     except:
         print("Failed to remove user")
 
-#Function for batch creation of permissions adds from GooglrDriveAPI
 def callback(request_id, response, exception):
     if exception:
 
@@ -325,7 +324,6 @@ def callback(request_id, response, exception):
         print ("Permission Id: %s" % response.get('id'))
 
 #Function to delete a google drive file
-#All it needs is a file ID and it uses the files methods to delete a file using the current instance of the GoogleDriveAPI
 def deleteFile(fileid):
     try:
         service.files().delete(fileId=fileid).execute()
